@@ -2,9 +2,10 @@
 
 #importing packages
 if(!require(data.table) | !require(mice) | !require(caTools) | !require(kernlab) | !require(class) | !require(e1071)
-   | !require(rpart) | !require(randomForest) | !require(xgboost) | !require(gbm) | !require(caret) | !require(DMwR) {
+   | !require(rpart) | !require(randomForest) | !require(xgboost) | !require(gbm) | !require(caret) | !require(DMwR) 
+   | !require(missForest) | !require(Amelia)){
   install.packages(c('rpart','randomForest', 'xgboost', 'gbm', 'caret','data.table','mice','caTools',
-                     'Kernlab','class','e1071','DMwR'))
+                     'Kernlab','class','e1071','DMwR','Amelia','missForest'))
 }
 
 
@@ -17,6 +18,14 @@ sapply(train_data, class)
 
 #checking Missing values
 sort(sapply(train_data, function(x) { sum(is.na(x)) }), decreasing=TRUE) #Something wrong at this point
+
+#visualising Missing data
+install.packages("VIM")
+library(VIM)
+mice_plot <- aggr(train_data, col=c('navyblue','yellow'),
+                  numbers=TRUE, sortVars=TRUE,
+                  labels=names(train_data), cex.axis=.7,
+                  gap=3, ylab=c("Missing data","Pattern"))   
 
 #Imputing Missing Values for training set
 library(mice)
@@ -79,6 +88,7 @@ range <- 1.5 * IQR(train_data$ApplicantIncome)
 normal_ApplicantIncome <- subset(train_data$ApplicantIncome,
                                  train_data$ApplicantIncome > (quantiles[1] - range) & train_data$ApplicantIncome < (quantiles[2] + range))
 #After deleting outliers 50 rows deleted
+   ################### Deleting Outliers is Baaad Habit ##############################
 
 #Detecting and deleting Outlier using outlierKD function
 outlierKD <- function(dt, var) {
@@ -116,7 +126,25 @@ outlierKD <- function(dt, var) {
 
 outlierKD(train_data, ApplicantIncome)
 
+#Imputing Missing Values for training set
+library(mice)
+imputed_data <- mice(train_data[,c(7,8,9,10)], m=5, maxit = 50, method = 'rf', seed = 500)
+train_data[,c(7,8,9,10)] <- complete(imputed_data, 2)
+   ######################## Doesn't Work :-( ################################
+
+#imputing Na values using Amelia
+#install.packages("Amelia")
+library(Amelia)
+amelia_fit <- amelia(train_data[,c(7,8,9)], m=5, parallel = "multicore")
+train_data[,c(7,8,9)] <- amelia_fit$imputations[[2]]
+   ########################## Doesn't Work :-( ##############################
    
+#imputing missing values with missForest
+#install.packages("missForest")
+library(missForest)
+imp <- missForest(train_data[,c(7,8,9,10)])
+train_data[,c(7,8,9,10)] <- imp$ximp   
+   ######################### Works Fine :-) ################################
 
 #Splitting train data in to two datasets for validation
 library(caTools)
