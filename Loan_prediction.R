@@ -216,7 +216,7 @@ kf_pred <- predict(model, newdata = testset[,-13])
 
 #confusion matrix                                                           normal/pca
 cm_knn <- table(testset$Loan_Status,knn_classifier)     #98/103 correct predictions 24/19 incorrect predictions
-cm_svm <- table(testset$Loan_Status, svm_pred)          #101/102 correct predictions 21/20 incorrect predictions
+cm_svm <- table(testset$Loan_Status, svm_pred)          #99/101/103 correct predictions 24/21/19 incorrect predictions
 cm_nb <- table(testset$Loan_Status, nb_pred)            #103/101 correct predictions 19/21 incorrect predictions
 cm_dt <- table(testset$Loan_Status, dt_pred)            #101/106 correct predictions 21/16 incorrect predictions
 cm_rf <- table(testset$Loan_Status, rf_pred)            #98/108 correct predictions 24/14 incorrect predictions
