@@ -2,9 +2,9 @@
 
 #importing packages
 if(!require(data.table) | !require(mice) | !require(caTools) | !require(kernlab) | !require(class) | !require(e1071)
-   | !require(rpart) | !require(randomForest) | !require(xgboost) | !require(gbm) | !require(caret)) {
+   | !require(rpart) | !require(randomForest) | !require(xgboost) | !require(gbm) | !require(caret) | !require(DMwR) {
   install.packages(c('rpart','randomForest', 'xgboost', 'gbm', 'caret','data.table','mice','caTools',
-                     'Kernlab','class','e1071'))
+                     'Kernlab','class','e1071','DMwR'))
 }
 
 
@@ -72,6 +72,13 @@ n <- nrow(train_data[,-13])
 labels <- 1:n
 labels[-outliers] <- "."
 biplot(prcomp(train_data[,-13]), cex=.8, xlabs=labels)
+
+#Detecting Outliers using interquartile
+quantiles <- quantile(train_data$ApplicantIncome, probs = c(.25, .75))
+range <- 1.5 * IQR(train_data$ApplicantIncome)
+normal_ApplicantIncome <- subset(train_data$ApplicantIncome,
+                                 train_data$ApplicantIncome > (quantiles[1] - range) & train_data$ApplicantIncome < (quantiles[2] + range))
+#After deleting outliers 50 rows deleted
 
 
 #Splitting train data in to two datasets for validation
