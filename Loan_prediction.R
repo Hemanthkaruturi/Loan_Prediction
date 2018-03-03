@@ -61,6 +61,19 @@ train_data$Loan_Amount_Term <- scale(train_data$Loan_Amount_Term)
 train_data$Credit_History <- scale(train_data$Credit_History)
 train_data$Property_Area <- scale(train_data$Property_Area)
 
+#Outlier Detection
+library(DMwR)
+outlier.scores <- lofactor(train_data[,-13], k=5)
+plot(density(outlier.scores))
+outliers <- order(outlier.scores, decreasing=T)[1:5] #Taking Top 5 outliers
+print(outliers)
+#Visualising outliers
+n <- nrow(train_data[,-13])
+labels <- 1:n
+labels[-outliers] <- "."
+biplot(prcomp(train_data[,-13]), cex=.8, xlabs=labels)
+
+
 #Splitting train data in to two datasets for validation
 library(caTools)
 set.seed(123)
