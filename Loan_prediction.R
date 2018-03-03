@@ -16,7 +16,7 @@ head(train_data)
 sapply(train_data, class)
 
 #checking Missing values
-sort(sapply(train_data, function(x) { sum(is.na(x)) }), decreasing=TRUE)
+sort(sapply(train_data, function(x) { sum(is.na(x)) }), decreasing=TRUE) #Something wrong at this point
 
 #Imputing Missing Values for training set
 library(mice)
@@ -27,7 +27,7 @@ train_data[,c(9,10,11)] <- complete(imputed_data, 2)
 train_data$Gender <- factor(train_data$Gender, labels = c(1,2), levels = c('Female','Male'))
 train_data$Married <- factor(train_data$Married, labels = c(0,1), levels = c('No','Yes'))
 train_data$Education <- factor(train_data$Education, labels = c(1,2), levels = c('Graduate','Not Graduate') )
-train_data$Self_Employed <- factor(train_data$Self_Employed, labels = c(1,2,3), c('','Yes','No'))
+train_data$Self_Employed <- factor(train_data$Self_Employed, labels = c(1,2), c('Yes','No'))
 train_data$Property_Area <- factor(train_data$Property_Area, labels = c(1,2,3), levels = c('Rural','Urban','Semiurban'))
 train_data$Loan_Status <- factor(train_data$Loan_Status, labels = c(0,1), levels = c('N','Y') )
 
@@ -35,8 +35,8 @@ train_data$Loan_Status <- factor(train_data$Loan_Status, labels = c(0,1), levels
 levels(train_data$Dependents)[levels(train_data$Dependents) ==  "3+"] <- "3"
 
 #Imputing Missing Value for Gender and Married
-imputed_data <- mice(train_data[,c(2,3)], m=5, maxit = 50, method = 'rf', seed = 500)
-train_data[,c(2,3)] <- complete(imputed_data, 2)
+imputed_data <- mice(train_data[,c(2,3,6)], m=5, maxit = 50, method = 'rf', seed = 500)
+train_data[,c(2,3,6)] <- complete(imputed_data, 2)
 
 #Converting categoical to integer for train data
 train_data$Gender <- as.integer(train_data$Gender)
@@ -130,11 +130,11 @@ gb_pred <- predict(gb_classifier, newdata = testset[,-13], n.trees = n.trees)
 kf_pred <- predict(model, newdata = testset[,-13])
 
 #confusion matrix                                                           normal/pca
-cm_knn <- table(testset$Loan_Status,knn_classifier)     #102/101 correct predictions 20/21 incorrect predictions
-cm_svm <- table(testset$Loan_Status, svm_pred)          #99/101 correct predictions 24/21 incorrect predictions
+cm_knn <- table(testset$Loan_Status,knn_classifier)     #98/103 correct predictions 24/19 incorrect predictions
+cm_svm <- table(testset$Loan_Status, svm_pred)          #101/102 correct predictions 21/20 incorrect predictions
 cm_nb <- table(testset$Loan_Status, nb_pred)            #103/101 correct predictions 19/21 incorrect predictions
-cm_dt <- table(testset$Loan_Status, dt_pred)            #101/104 correct predictions 21/18 incorrect predictions
-cm_rf <- table(testset$Loan_Status, rf_pred)            #98/107 correct predictions 24/15 incorrect predictions
+cm_dt <- table(testset$Loan_Status, dt_pred)            #101/106 correct predictions 21/16 incorrect predictions
+cm_rf <- table(testset$Loan_Status, rf_pred)            #98/108 correct predictions 24/14 incorrect predictions
 cm_xg <- table(testset$Loan_Status, xg_pred)            #84/84 correct predictions 38/38 incorrect predictions
 cm_gb <- table(testset$Loan_Status, gb_pred)
-cm_kf <- table(testset$Loan_Status, kf_pred)            #101/99 correct predictions 21/23 incorrect predictions
+cm_kf <- table(testset$Loan_Status, kf_pred)            #101/98 correct predictions 21/24 incorrect predictions
