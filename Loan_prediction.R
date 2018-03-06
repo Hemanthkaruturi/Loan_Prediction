@@ -202,6 +202,7 @@ gb_classifier <- gbm(Loan_Status ~ ., data = trainset,distribution = "gaussian",
 library(caret)
 train_control<- trainControl(method="cv", number=10, savePredictions = TRUE)
 model<- train(Loan_Status~., data=trainset, trControl=train_control, method="rpart")
+print(model) #here we can see the accuracy
 
 #Predicting the test results
 svm_pred <- predict(svm_classifier, newdata = testset[,-13])
