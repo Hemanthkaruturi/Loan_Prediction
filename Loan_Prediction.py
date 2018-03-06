@@ -35,7 +35,7 @@ data['Gender'] = data['Gender'].fillna(data['Gender'].value_counts().index[0])
 data['Married'] = data['Married'].fillna(data['Married'].value_counts().index[0])
 data['Self_Employed'] = data['Self_Employed'].fillna(data['Self_Employed'].value_counts().index[0])
 
-#imputing missing values for categorical variables
+#imputing missing values for descrete variables
 x = values[:,8:11]
 imputer = Imputer(missing_values = 'NaN', strategy = 'mean', axis = 0)
 imputer = imputer.fit(x[:,0:3])
