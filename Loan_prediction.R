@@ -11,7 +11,7 @@ if(!require(data.table) | !require(mice) | !require(caTools) | !require(kernlab)
 
 #importing data
 library(data.table)
-train_data <- fread(file.choose(), stringsAsFactors = T)
+train_data <- fread(file.choose(), stringsAsFactors = T, na.strings = c(""," ",NA))
 
 head(train_data)
 sapply(train_data, class)
